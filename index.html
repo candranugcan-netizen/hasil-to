@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Laporan Hasil Try Out</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600&family=Quicksand:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="icon" type="image/x-icon" href="logo.png">
+    
+    <style>
+        :root {
+            --primary: #0174C5;
+            --secondary: #A5C89E;
+            --accent: #9BC264;
+            --text-dark: #2d3436;
+            --text-light: #636e72;
+            --white: #ffffff;
+            --glass: rgba(255, 255, 255, 0.95);
+        }
+
+        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+
+        body { 
+            font-family: 'Quicksand', sans-serif; 
+            background: linear-gradient(135deg, #0174C5 0%, #8f94fb 100%);
+            min-height: 100vh; margin: 0; padding: 10px; /* Padding body diperkecil untuk mobile */
+            display: flex; justify-content: center; align-items: center;
+        }
+
+        /* Container Utama */
+        .container { 
+            background: var(--glass);
+            width: 100%; max-width: 480px; 
+            padding: 1.5rem; 
+            border-radius: 20px; 
+            box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+            backdrop-filter: blur(10px);
+            transition: all 0.3s ease;
+        }
+
+        /* Mode Dashboard lebih lebar tapi tetap fit di mobile */
+        .container.dashboard-mode { max-width: 800px; }
+
+        h2 { font-family: 'Fredoka', sans-serif; color: var(--primary); text-align: center; margin: 0 0 10px 0; }
+        .subtitle { text-align: center; color: var(--text-light); font-size: 13px; margin-bottom: 25px; }
+
+        /* --- LOGIN SECTION --- */
+        #login-section { text-align: center; }
+        
+        .logo-container {
+            width: 90px; height: 90px; margin: 0 auto 15px auto;
+            background: white; border-radius: 50%;
+            display: flex; justify-content: center; align-items: center;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        }
+        .logo-img { max-width: 100%; height: auto; }
+
+        .form-group { margin-bottom: 12px; text-align: left; }
+        .form-label { font-size: 11px; font-weight: bold; color: var(--primary); margin-left: 10px; display: block; margin-bottom: 4px; }
+        
+        input { 
+            width: 100%; padding: 12px 18px; 
+            border: 2px solid #e0e0e0; border-radius: 50px; 
+            font-family: 'Quicksand', sans-serif; font-size: 15px; font-weight: 600;
+            outline: none; background: #f9f9f9;
+        }
+        input:focus { border-color: var(--primary); background: white; }
+        
+        button { 
+            width: 100%; padding: 12px; margin-top: 8px;
+            background: var(--primary); color: white; border: none; border-radius: 50px; 
+            font-size: 15px; font-weight: bold; cursor: pointer; 
+            box-shadow: 0 4px 12px rgba(78, 84, 200, 0.3);
+        }
+
+        /* --- DASHBOARD SECTION --- */
+        #dashboard { display: none; animation: fadeIn 0.5s ease; }
+        
+        /* Kartu Info Siswa - Lebih Compact */
+        .student-card {
+            background: white; border-radius: 15px; padding: 15px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+            display: flex; align-items: center; justify-content: space-between;
+            margin-bottom: 20px; border: 1px solid #eee;
+        }
+        .student-left { display: flex; align-items: center; gap: 12px; }
+        .student-avatar {
+            width: 45px; height: 45px; background: var(--secondary); color: white;
+            border-radius: 50%; display: flex; align-items: center; justify-content: center;
+            font-size: 20px; font-family: 'Fredoka', sans-serif;
+            flex-shrink: 0;
+        }
+        .student-details h3 { margin: 0; color: var(--text-dark); font-size: 1rem; }
+        .student-details p { margin: 2px 0 0; font-size: 0.8rem; color: var(--text-light); }
+        .class-badge { 
+            text-align: center; background: #f0f2f5; padding: 5px 10px; 
+            border-radius: 10px; min-width: 60px;
+        }
+        .class-badge span { font-size: 10px; display: block; color: #888; }
+        .class-badge strong { font-size: 14px; color: var(--primary); }
+
+        /* Grafik Responsive */
+        .chart-wrapper { 
+            background: white; padding: 10px; border-radius: 15px; 
+            box-shadow: 0 4px 10px rgba(0,0,0,0.05); margin-bottom: 20px; 
+            height: 280px; /* Tinggi dikurangi agar pas di HP */
+            position: relative;
+        }
+
+        /* Tabel Mobile Friendly */
+        .table-container { 
+            overflow-x: auto; border-radius: 12px; 
+            box-shadow: 0 4px 10px rgba(0,0,0,0.05); 
+            background: white; margin-bottom: 20px;
+            border: 1px solid #f0f0f0;
+        }
+        table { width: 100%; border-collapse: collapse; min-width: 450px; } 
+        th, td { padding: 10px; text-align: center; font-size: 13px; white-space: nowrap; }
+        
+        thead tr:first-child th { background: var(--primary); color: white; }
+        thead tr:last-child th { background: #f8f9fa; color: var(--text-dark); font-size: 11px; font-weight: 700; }
+        
+        tbody tr { border-bottom: 1px solid #f5f5f5; }
+        .score-val { font-weight: 600; color: #444; }
+        .total-val { color: var(--primary); font-weight: 800; }
+        .rank-badge { 
+            background: var(--accent); color: white; padding: 3px 10px; 
+            border-radius: 20px; font-size: 11px; font-weight: bold;
+        }
+
+        .loading, .error { text-align: center; margin-top: 15px; font-size: 13px; font-weight: 600; }
+        .loading { display: none; color: var(--primary); }
+        .error { color: #d63031; display: none; background: #ffeaea; padding: 10px; border-radius: 8px;}
+
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* Mobile Tweaks Khusus Layar Kecil */
+        @media (max-width: 480px) {
+            .container { padding: 1.2rem; width: 100%; border-radius: 15px; }
+            h2 { font-size: 1.4rem; }
+            .student-card { padding: 12px; }
+            .student-details h3 { font-size: 0.95rem; }
+            .chart-wrapper { height: 240px; } /* Grafik lebih pendek di HP */
+            th, td { padding: 8px 6px; font-size: 12px; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container" id="main-container">
+        
+        <div id="login-section">
+            <div class="logo-container">
+                <img src="logo.png" alt="Logo Sekolah" class="logo-img">
+            </div>
+            <h2>Hasil TO TKA/TKAD</h2>
+            <p class="subtitle">Silakan login untuk melihat hasil</p>
+            
+            <div class="form-group">
+                <label class="form-label">NIS (Nomor Induk Siswa)</label>
+                <input type="text" id="nis" placeholder="Contoh: 01044..." inputmode="numeric">
+            </div>
+            <div class="form-group">
+                <label class="form-label">Password</label>
+                <input type="password" id="password" placeholder="••••••">
+            </div>
+            
+            <button onclick="login()">LIHAT HASIL</button>
+            
+            <p class="loading" id="loading">Sedang memuat data...</p>
+            <p class="error" id="error-msg">NIS atau Password salah!</p>
+        </div>
+
+        <div id="dashboard">
+            <div class="student-card">
+                <div class="student-left">
+                    <div class="student-avatar" id="avatar-initial">S</div>
+                    <div class="student-details">
+                        <h3 id="d-nama">Nama Siswa</h3>
+                        <p id="d-nis">NIS: -</p>
+                    </div>
+                </div>
+                <div class="class-badge">
+                    <span>KELAS</span>
+                    <strong id="d-kelas">-</strong>
+                </div>
+            </div>
+
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px; padding:0 5px;">
+                <h3 style="margin:0; color:var(--text-dark); font-family:'Fredoka', sans-serif; font-size:16px;">Grafik Rata-rata</h3>
+            </div>
+            <div class="chart-wrapper">
+                <canvas id="scoreChart"></canvas>
+            </div>
+
+            <h3 style="margin: 25px 0 10px 5px; color:var(--text-dark); font-family:'Fredoka', sans-serif; font-size:16px;">Rincian Nilai</h3>
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th rowspan="2" style="border-top-left-radius: 10px;">TO</th>
+                            <th colspan="4">Mata Pelajaran</th>
+                            <th rowspan="2">Rata²</th>
+                            <th rowspan="2" style="border-top-right-radius: 10px;">Peringkat</th>
+                        </tr>
+                        <tr>
+                            <th>B. Indonesia</th>
+                            <th>Matematika</th>
+                            <th>B. Inggris</th>
+                            <th>IPA</th>
+                        </tr>
+                    </thead>
+                    <tbody id="table-body">
+                        </tbody>
+                </table>
+            </div>
+
+            <button onclick="location.reload()" style="background: #C40C0C; margin-top: 15px; font-size:14px; box-shadow: 0 4px 10px rgba(255, 118, 117, 0.3);">KELUAR</button>
+        </div>
+    </div>
+
+    <script>
+        // --- GANTI DENGAN URL APPS SCRIPT ANDA ---
+        const API_URL = 'https://script.google.com/macros/s/AKfycbz521yZn5wY7r1meHyquIcy86-y5btPTg6bFNhKAfQlLY9NcHj-XXqN5VgIlm8uKkJcwQ/exec'; 
+
+        function login() {
+            const nis = document.getElementById('nis').value.trim();
+            const pass = document.getElementById('password').value.trim();
+            const load = document.getElementById('loading');
+            const err = document.getElementById('error-msg');
+            const btn = document.querySelector('button');
+
+            if(!nis || !pass) { 
+                err.innerText = "Harap isi NIS dan Password!";
+                err.style.display = 'block'; return; 
+            }
+
+            load.style.display = 'block'; err.style.display = 'none';
+            btn.disabled = true; btn.style.opacity = '0.7';
+
+            fetch(`${API_URL}?nis=${nis}&password=${pass}`)
+                .then(res => res.json())
+                .then(res => {
+                    load.style.display = 'none'; btn.disabled = false; btn.style.opacity = '1';
+
+                    if(res.status === 'success') {
+                        showDashboard(res.data, nis);
+                    } else {
+                        err.innerText = "NIS atau Password salah!"; err.style.display = 'block';
+                    }
+                })
+                .catch(e => {
+                    load.style.display = 'none'; btn.disabled = false;
+                    err.innerText = "Gagal terhubung. Cek koneksi internet."; err.style.display = 'block';
+                });
+        }
+
+        function showDashboard(data, nis) {
+            document.getElementById('main-container').classList.add('dashboard-mode');
+            document.getElementById('login-section').style.display = 'none';
+            document.getElementById('dashboard').style.display = 'block';
+
+            document.getElementById('d-nama').innerText = data.nama;
+            document.getElementById('d-kelas').innerText = data.kelas;
+            document.getElementById('d-nis').innerText = nis;
+            document.getElementById('avatar-initial').innerText = data.nama.charAt(0);
+
+            const tbody = document.getElementById('table-body');
+            tbody.innerHTML = '';
+            
+            const labels = [];
+            const dataRata = [];
+            const dataRank = [];
+
+            data.tryouts.forEach((to, index) => {
+                const toName = `TO-${index + 1}`;
+                labels.push(toName);
+                dataRata.push(to.rata);
+                dataRank.push(to.rank);
+
+                const row = `
+                    <tr>
+                        <td style="font-weight:bold; color:var(--primary);">${toName}</td>
+                        <td>${to.indo}</td>
+                        <td>${to.mat}</td>
+                        <td>${to.ingg}</td>
+                        <td>${to.ipa}</td>
+                        <td class="total-val">${to.rata}</td>
+                        <td><span class="rank-badge">#${to.rank}</span></td>
+                    </tr>
+                `;
+                tbody.innerHTML += row;
+            });
+
+            renderChart(labels, dataRata);
+        }
+
+        function renderChart(labels, dataRata) {
+            const ctx = document.getElementById('scoreChart').getContext('2d');
+            
+            new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'Nilai Rata-rata',
+                        data: dataRata,
+                        borderColor: '#4e54c8',
+                        backgroundColor: 'rgba(78, 84, 200, 0.1)',
+                        borderWidth: 3,
+                        pointBackgroundColor: '#fff',
+                        pointBorderColor: '#4e54c8',
+                        pointRadius: 5,
+                        pointHoverRadius: 7,
+                        fill: true,
+                        tension: 0.3
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false }, // Legend disembunyikan agar lebih bersih di HP
+                        tooltip: { 
+                            backgroundColor: 'rgba(0,0,0,0.8)', 
+                            titleFont: {family: 'Quicksand'}, 
+                            bodyFont: {family: 'Quicksand'},
+                            padding: 10,
+                            displayColors: false,
+                            callbacks: {
+                                label: function(context) {
+                                    return 'Rata-rata: ' + context.parsed.y;
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        x: { grid: {display: false}, ticks: {font: {size: 11}} },
+                        y: {
+                            beginAtZero: false,
+                            min: 0, max: 100,
+                            grid: { color: '#f0f0f0' },
+                            ticks: { font: {size: 11} }
+                        }
+                    }
+                }
+            });
+        }
+    </script>
+</body>
+</html>
