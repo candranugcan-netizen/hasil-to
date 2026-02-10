@@ -144,6 +144,27 @@
             .chart-wrapper { height: 240px; } /* Grafik lebih pendek di HP */
             th, td { padding: 8px 6px; font-size: 12px; }
         }
+
+
+        /* --- TAMBAHAN: Style Kartu Motivasi --- */
+        .motivation-card {
+            background: linear-gradient(135deg, #0174C5 0%, #69c1ff 100%); /* Nuansa Hijau Segar */
+            color: white;
+            text-align: center;
+            padding: 15px;
+            border-radius: 15px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+            font-family: 'Fredoka', sans-serif;
+            min-height: 60px; /* Agar tinggi stabil */
+            display: flex; align-items: center; justify-content: center;
+        }
+        .motivation-text {
+            font-size: 1.1rem;
+            margin: 0;
+            animation: fadeInText 0.5s ease-in-out;
+        }
+        @keyframes fadeInText { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
     </style>
 </head>
 <body>
@@ -158,7 +179,7 @@
             <p class="subtitle">Silakan login untuk melihat hasil</p>
             
             <div class="form-group">
-                <label class="form-label">NIS (Nomor Induk Siswa)</label>
+                <label class="form-label">NISN (Nomor Induk Siswa Nasional)</label>
                 <input type="text" id="nis" placeholder="Contoh: 01044..." inputmode="numeric">
             </div>
             <div class="form-group">
@@ -169,7 +190,7 @@
             <button onclick="login()">LIHAT HASIL</button>
             
             <p class="loading" id="loading">Sedang memuat data...</p>
-            <p class="error" id="error-msg">NIS atau Password salah!</p>
+            <p class="error" id="error-msg">NISN atau Password salah!</p>
         </div>
 
         <div id="dashboard">
@@ -178,13 +199,17 @@
                     <div class="student-avatar" id="avatar-initial">S</div>
                     <div class="student-details">
                         <h3 id="d-nama">Nama Siswa</h3>
-                        <p id="d-nis">NIS: -</p>
+                        <p id="d-nis">NISN: -</p>
                     </div>
                 </div>
                 <div class="class-badge">
                     <span>KELAS</span>
                     <strong id="d-kelas">-</strong>
                 </div>
+            </div>
+
+            <div class="motivation-card">
+                <p id="motivation-text" class="motivation-text">Semangat Belajar!</p>
             </div>
 
             <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px; padding:0 5px;">
@@ -260,6 +285,9 @@
             document.getElementById('main-container').classList.add('dashboard-mode');
             document.getElementById('login-section').style.display = 'none';
             document.getElementById('dashboard').style.display = 'block';
+
+            // --- TAMBAHAN: JALANKAN SLIDESHOW ---
+            startMotivation();
 
             document.getElementById('d-nama').innerText = data.nama;
             document.getElementById('d-kelas').innerText = data.kelas;
@@ -347,6 +375,33 @@
                 }
             });
         }
+
+
+        // --- LOGIC MOTIVASI ---
+        const quotes = [
+            "Teruslah belajar dan berdoa!",
+            "Fokus pada prosesnya,",
+            "hasilnya akan mengikuti.",
+            "Masa depanmu dimulai hari ini.",
+            "Jangan takut salah, takutlah menyerah.",
+            "Jadilah versi terbaik dari dirimu!",
+            "Prestasi besar butuh proses.",
+            "Kamu pasti BISA!"
+        ];
+
+        function startMotivation() {
+            let index = 0;
+            const card = document.querySelector('.motivation-card'); // Ambil wadahnya, bukan teksnya
+            
+            setInterval(() => {
+                index = (index + 1) % quotes.length;
+                
+                // Kita timpa isi HTML wadahnya. 
+                // Karena elemen <p> dibuat ulang, animasi CSS 'fadeInText' akan jalan otomatis setiap kali.
+                card.innerHTML = `<p class="motivation-text">${quotes[index]}</p>`;
+            }, 3000); // Saya ubah jadi 3 detik agar lebih nyaman dibaca (2 detik terlalu cepat)
+        }
+
     </script>
 </body>
 </html>
