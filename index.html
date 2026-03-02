@@ -182,15 +182,11 @@
                 <label class="form-label">NISN (Nomor Induk Siswa Nasional)</label>
                 <input type="text" id="nis" placeholder="Contoh: 01044..." inputmode="numeric">
             </div>
-            <div class="form-group">
-                <label class="form-label">Password</label>
-                <input type="password" id="password" placeholder="••••••" inputmode="numeric">
-            </div>
             
             <button onclick="login()">LIHAT HASIL</button>
             
             <p class="loading" id="loading">Sedang memuat data...</p>
-            <p class="error" id="error-msg">NISN atau Password salah!</p>
+            <p class="error" id="error-msg">NISN!</p>
         </div>
 
         <div id="dashboard">
@@ -247,24 +243,24 @@
 
     <script>
         // --- GANTI DENGAN URL APPS SCRIPT ANDA ---
-        const API_URL = 'https://script.google.com/macros/s/AKfycbww0Yt_CYsdC3hX1vzENVqHYQj2eUHdtlO8HSDdvJOyJGubN8-PakdwhCsyp21iOpxBtQ/exec'; 
+        const API_URL = 'https://script.google.com/macros/s/AKfycbw6yXOFfv1IiLURCNkR0KFc9F_YmblQBXwgdN0p7zhDmmSMMdsbdfbEtUpmOAHq3oQUuA/exec'; 
 
         function login() {
             const nis = document.getElementById('nis').value.trim();
-            const pass = document.getElementById('password').value.trim();
+            
             const load = document.getElementById('loading');
             const err = document.getElementById('error-msg');
             const btn = document.querySelector('button');
 
-            if(!nis || !pass) { 
-                err.innerText = "Harap isi NIS dan Password!";
+            if(!nis) { 
+                err.innerText = "Harap isi NISN!";
                 err.style.display = 'block'; return; 
             }
 
             load.style.display = 'block'; err.style.display = 'none';
             btn.disabled = true; btn.style.opacity = '0.7';
 
-            fetch(`${API_URL}?nis=${nis}&password=${pass}`)
+            fetch(`${API_URL}?nis=${nis}`)
                 .then(res => res.json())
                 .then(res => {
                     load.style.display = 'none'; btn.disabled = false; btn.style.opacity = '1';
@@ -272,7 +268,7 @@
                     if(res.status === 'success') {
                         showDashboard(res.data, nis);
                     } else {
-                        err.innerText = "NIS atau Password salah!"; err.style.display = 'block';
+                        err.innerText = "NISN salah!"; err.style.display = 'block';
                     }
                 })
                 .catch(e => {
@@ -383,8 +379,7 @@
             "Fokus pada prosesnya,",
             "hasilnya akan mengikuti.",
             "Masa depanmu dimulai hari ini.",
-            "Jangan takut salah,",
-            "takutlah menyerah.",
+            "Jangan takut salah, takutlah menyerah.",
             "Jadilah versi terbaik dari dirimu!",
             "Prestasi besar butuh proses.",
             "Kamu pasti BISA!"
@@ -406,6 +401,3 @@
     </script>
 </body>
 </html>
-
-
-
